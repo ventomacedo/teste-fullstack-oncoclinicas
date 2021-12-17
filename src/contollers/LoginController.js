@@ -4,18 +4,15 @@ const Users     = require('../models/users');
 const Sequelize = require('sequelize');
 const Joi       = require('joi');
 const bcrypt    = require('bcryptjs');
-
-const jwt         = require('jsonwebtoken');
-const passport    = require('passport');
-const passportJWT = require('passport-jwt');
+const jwt       = require('jsonwebtoken');
 
 module.exports = { 
     
     index: async (req, res) => {
 
         const schema = Joi.object().keys({
-            email:    Joi.string().required(),
-            password: Joi.string().required()
+            email:     Joi.string().required(),
+            password:  Joi.string().required()
         }); 
         
         const { error } = schema.validate(req.body);

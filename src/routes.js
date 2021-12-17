@@ -1,7 +1,10 @@
+require("dotenv").config();
 require('express-router-group');
 
-const { Router } = require('express');
-const routes = new Router();
+const { Router }           = require('express');
+const passport             = require('passport');
+const middlewareValidarJWT = require('./middleware/validateJWT');
+const routes               = new Router();
 
 // Controllers
 const DoctorController = require('./contollers/DoctorController');
@@ -13,6 +16,7 @@ const UserController   = require('./contollers/UserController');
 
     /** Rotas de médicos **/
         routes.group('/medicos', routes => { 
+            routes.use(middlewareValidarJWT);
             routes.get('/find/:term', DoctorController.search);
             routes.get('/:id',        DoctorController.show);
             routes.get('/',           DoctorController.index);
@@ -24,6 +28,7 @@ const UserController   = require('./contollers/UserController');
 
     /** Rotas de usuário **/
         routes.group('/usuarios', routes => {
+            routes.use(middlewareValidarJWT);
             routes.get('/:id',        UserController.show);
             routes.get('/',           UserController.index);
             routes.post('/',          UserController.add);
