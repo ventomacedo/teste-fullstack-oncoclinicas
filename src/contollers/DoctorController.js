@@ -1,5 +1,6 @@
-const Doctor       = require('../models/doctors');
-const Sequelize    = require('sequelize');
+const Doctor    = require('../models/doctors');
+const Sequelize = require('sequelize');
+const Joi       = require('joi');
 
 module.exports = { 
     
@@ -21,14 +22,20 @@ module.exports = {
 
         const { like, or } = Sequelize.Op;
         const { params }   = req;
-        
-        if(!params.term) 
-            return res.send({ message: "Term is required" });
+
+        const schema    = Joi.object().keys({ term: Joi.required() }); 
+        const { error } = schema.validate(params);
+
+        if(error) {
+            const { details } = error;
+            const message     = details.map(i => i.message).join(',');
+            return res.status(422).send({ error: message });
+        }
 
         const doctors = await Doctor.findAll({
             where: {
                 [or]: [
-                    { doctorName:     { [like]: `%${params.term}%` }},
+                    { name:           { [like]: `%${params.term}%` }},
                     { crm:            { [like]: `%${params.term}%` }},
                     { specialization: { [like]: `%${params.term}%` }}
                 ]
@@ -38,20 +45,36 @@ module.exports = {
     },
 
     add: async (req, res) => {
-        const { name, crm, specialization } = req.body;
         
-        if(!name || !crm || !specialization) 
-            return res.send({ message: "Name, CRM and Specialization are required" });
+        const schema = Joi.object().keys({ 
+            name:           Joi.string().required(),
+            crm:            Joi.string().required(),
+            specialization: Joi.string().required(),
+        }); 
+        
+        const { error } = schema.validate(req.body);
+        if(error) {
+            const { details } = error;
+            const message     = details.map(i => i.message).join(',');
+            return res.status(422).send({ error: message });
+        }
 
+        const { name, crm, specialization } = req.body;
         const newDoctor = await Doctor.create({ name, crm, specialization });
         res.status(201).json({ message: "successfully created", id: newDoctor.dataValues.id });
     },
     edit: async (req, res) => {
-        const { id } = req.params;
         
-        if(!id) 
-            return res.send({ message: "Id is required" });
+        const schema    = Joi.object().keys({ id: Joi.string().required() }); 
+        const { error } = schema.validate(req.params);
 
+        if(error) {
+            const { details } = error;
+            const message     = details.map(i => i.message).join(',');
+            return res.status(422).send({ error: message });
+        }
+
+        const { id } = req.params;
         const doctor = await Doctor.findByPk(id);
         if(!!doctor) {
             Object.keys(doctor.dataValues).map(key => {
@@ -63,16 +86,29 @@ module.exports = {
             res.send({ message: "Successfully updated" });
         }
         else {
-            res.send({ message: "Register not found" });
+            res.status().send({ message: "Register not found" });
         }
     },
     editComplete: (req, res) => {
         try {
+
             const { id } = req.params;
             const { name, crm, specialization } = req.body;
+            const dataValidation = { id, name, crm, specialization };
 
-            if(!id || !name || !crm, !specialization) 
-                return res.send({ message: "All fields are required" });
+            const schema = Joi.object().keys({
+                id:             Joi.string().required(),
+                name:           Joi.string().required(),
+                crm:            Joi.string().required(),
+                specialization: Joi.string().required()
+            }); 
+            const { error } = schema.validate(dataValidation);
+
+            if(error) {
+                const { details } = error;
+                const message     = details.map(i => i.message).join(',');
+                return res.status(422).send({ error: message });
+            }
 
             Doctor.update({ name, crm, specialization }, { where: { id }});
             res.send({ message: "Successfully updated" });
@@ -81,9 +117,17 @@ module.exports = {
             res.send({ message: "Update failed" });
         }
     },
-
     remove: async (req, res) => {
         const { params } = req;
+        const schema     = Joi.object().keys({ id: Joi.string().required() }); 
+        const { error }  = schema.validate(params);
+
+        if(error) {
+            const { details } = error;
+            const message     = details.map(i => i.message).join(',');
+            return res.status(422).send({ error: message });
+        }
+
         const response = await Doctor.destroy({ where: { id: params.id }});
         res.send({ message: "successfully deleted" });
     }
