@@ -86,7 +86,7 @@ module.exports = {
             res.send({ message: "Successfully updated" });
         }
         else {
-            res.status().send({ message: "Register not found" });
+            res.status(400).send({ message: "Register not found" });
         }
     },
     editComplete: (req, res) => {

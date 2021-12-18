@@ -54,4 +54,4 @@ const bcrypt    = require('bcryptjs');
         }
     });
 
-module.exports = Users
+module.exports = Users;

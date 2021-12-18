@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS `db_oncoclinicas`;
+CREATE DATABASE IF NOT EXISTS `db_test`;

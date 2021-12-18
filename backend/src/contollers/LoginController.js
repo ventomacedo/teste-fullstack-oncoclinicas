@@ -1,7 +1,4 @@
-require("dotenv").config();
-
 const Users     = require('../models/users');
-const Sequelize = require('sequelize');
 const Joi       = require('joi');
 const bcrypt    = require('bcryptjs');
 const jwt       = require('jsonwebtoken');
@@ -9,7 +6,6 @@ const jwt       = require('jsonwebtoken');
 module.exports = { 
     
     index: async (req, res) => {
-
         const schema = Joi.object().keys({
             email:     Joi.string().required(),
             password:  Joi.string().required()
@@ -27,7 +23,6 @@ module.exports = {
         const response = bcrypt.compareSync(password, user.password);
         
         if(response) {
-            console.log(process.env.JWT_SECRET_TOKEN);
             const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_TOKEN);
             return res.send({ 
                 message: "Authorized", 
