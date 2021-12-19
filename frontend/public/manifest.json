@@ -1,0 +1,30 @@
+{
+  "short_name": "Oncoclínicas",
+  "name": "Teste Oncoclínicas",
+  "icons": [
+    {
+      "src": "favicon-72x72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "favicon-180x180.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    },
+    {
+      "src": "favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "favicon-270x270.png",
+      "type": "image/png",
+      "sizes": "270x270"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
