@@ -1,30 +1,55 @@
 version: '3.7'
 
+networks: 
+  ntalphash:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+
 services:
   db:
-      container_name: Oncoclinicas_MySQL
-      image: mysql:5.7.13
-      command: --default-authentication-plugin=mysql_native_password --sql_mode=NO_ENGINE_SUBSTITUTION,NO_AUTO_CREATE_USER --explicit_defaults_for_timestamp --init-file /data/application/create-database.sql
-      restart: always
-      ports: 
-        - 3306:3306
-      volumes:
-          - ./backend/src/database/sql/create-database.sql:/data/application/create-database.sql
-      environment:
-        - MYSQL_ROOT_PASSWORD=secret
-        - MYSQL_ROOT_HOST=%
-        - TZ=America/Sao_Paulo
-  
+    container_name: Oncoclinicas_MySQL
+    image: mysql:5.7.25
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/create-database.sql
+    volumes:
+      - ./backend/src/database/sql/create-database.sql:/data/application/create-database.sql
+      - ./mysql:/var/lib/mysql
+    networks: 
+      ntalphash:
+        ipv4_address: 172.20.0.2
+    ports:
+      - target: 3306
+        published: 3306
+        protocol: tcp
+        mode: host
+    healthcheck:
+      test: "mysqladmin ping -h localhost"
+      interval: 1s
+      timeout: 1s
+      retries: 60
+    environment:
+      - MYSQL_USER=master
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_ROOT_HOST=%
+      - TZ=America/Sao_Paulo
+
   frontend:
     build:
       dockerfile: Dockerfile
       context: ./frontend
     container_name: Oncoclinicas_APP
     command: yarn start
+    networks: 
+        ntalphash:
+          ipv4_address: 172.20.0.3
     ports: 
-      - '3000:3000'
+      - 3000:3000
     volumes:
-      - ./frontend:/app
+      - ./frontend:/usr/share/nginx/html/www:consistent
     depends_on:
       - backend
   
@@ -35,19 +60,34 @@ services:
     container_name: Oncoclinicas_API
     command: yarn start
     restart: always
+    networks: 
+        ntalphash:
+          ipv4_address: 172.20.0.4
     ports: 
-      - '3001:3001'
+      - 3001:3001
     volumes:
       - ./backend:/usr/app
     depends_on:
       - db
+    links: 
+      - db
+  
+  phpmyadmin:
+    container_name: Oncoclinicas_MyAdmin
+    image: nazarpc/phpmyadmin
+    # restart: always
+    networks: 
+        ntalphash:
+          ipv4_address: 172.20.0.5
+    ports:
+      - 8080:80
+    links:
+      - db
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_CLIENT=${DATABASE_CLIENT}
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_NAME=${DATABASE_NAME}
-      - DATABASE_PORT=${DATABASE_PORT}
+        - PMA_HOST=db
+        - MYSQL_USER=root
+        - MYSQL_PASSWORD=secret
+        - MYSQL_ROOT_PASSWORD=secret
   
   nginx:
     depends_on:
@@ -58,6 +98,11 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./nginx
+    volumes:
+        - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: 
+        ntalphash:
+          ipv4_address: 172.20.0.10
     ports:
-      - "80:80"
+      - 80:80
   

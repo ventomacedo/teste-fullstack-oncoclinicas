@@ -12,7 +12,7 @@ class App {
 
     routes() {
         this.server.use(express.json());
-        this.server.use(cors({ origin: "http://localhost:80" }));
+        this.server.use(cors({ origin: "*" }));
         this.server.use('/api/v1', routes);
     }
 }
