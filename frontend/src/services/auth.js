@@ -7,8 +7,8 @@ const axios    = Axios.create({ baseURL: BASE_URL });
 const auth = {
     signin: async (email, password) => {
         try {
-            const { data } = await axios.post('/login', { email, password });
-            return !!data?.token ? data : null ;
+            const response = await axios.post('/login', { email, password });
+            return response.status === 200 ? response.data : null ;
         }
         catch(error) {
             console.log(error);

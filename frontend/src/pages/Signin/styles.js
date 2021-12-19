@@ -16,6 +16,9 @@ export const Aside = styled.div`
     background-repeat:   no-repeat;
     background-size:     cover;
     background-position: center;
+
+    @media(min-width: 0px)   { display:  none; }
+    @media(min-width: 600px) { display: block; }
 `;
 
 export const Content = styled.div`
@@ -25,23 +28,29 @@ export const Content = styled.div`
     font-size:        1rem;
 
     flex:     8;
-    padding:  0 100px;
     
     display:        flex;
     flex-direction: column;
     
     align-items:     center;
     justify-content: center;
+
+    @media(min-width: 0px)    { padding:  0 30px; }
+    @media(min-width: 600px)  { padding:  0 30px; }
+    @media(min-width: 1200px) { padding: 0 100px; }
 `;
 
 export const Form = styled.form`
-        width:    70%;
         display: flex;
 
         flex-direction:  column;
         align-items:     center;
         justify-content: center;
         margin:       30px auto;
+
+        @media(min-width: 0px)   { width:  90%; }
+        @media(min-width: 600px) { width: 100%; }
+        @media(min-width: 900px) { width:  70%; }
     `;
 
 export const Logo = styled.img`

@@ -1,8 +1,9 @@
 import { useState }     from 'react';
 import { useForm }      from "react-hook-form";
 
-import { useAuth }   from '../../provider/auth';
-import logoImg   from '../../assets/images/logo-oncoclinicas.svg';
+import { useAuth }  from '../../provider/auth';
+import logoImg      from '../../assets/images/logo-oncoclinicas.svg';
+import Notification from '../../components/Notification';
 
 import { BsEyeSlash, BsEye }       from "react-icons/bs";
 import { MdOutlineAlternateEmail } from "react-icons/md";
@@ -13,13 +14,16 @@ import {  Main, Logo, Aside, Form, Content, Error } from './styles';
 
 const Signin = () => {
     const [ showPass, setShowPass ] = useState(false);
-    const { register, formState: { errors }, handleSubmit, isSubmiting } = useForm({ criteriaMode: "all" });
+    const [ valid,       setValid ] = useState(true);
+
+    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm({ criteriaMode: "all" });
   
     const { signIn } = useAuth();
-    const onSubmit = (data) => {
-        return signIn(data.email, data.password)
+    const onSubmit = async (data) => {
+        setValid(true);
+        const response = await signIn(data.email, data.password);
+        setValid(response);
     }
-
 
     return (
         <Main>
@@ -27,7 +31,7 @@ const Signin = () => {
             <Content>
                 <Logo src={ logoImg } alt="Logotipo do grupo Oncoclinicas" />
                 <Form autoComplete="off" noValidate onSubmit={ handleSubmit(onSubmit) }>
-                   
+                    
                     <FormControl mt={ 5 }>
                         <InputGroup>
                             <InputLeftElement pointerEvents='none' children={ <MdOutlineAlternateEmail color='gray.300' /> } />
@@ -78,15 +82,21 @@ const Signin = () => {
                         <Button 
                             type="submit" 
                             colorScheme="green" 
-                            isLoading={ isSubmiting } 
+                            isLoading={ isSubmitting }
                             loadingText='Aguarde...' 
                             width="100%" 
                             margin="auto">
                                 Entrar
                         </Button>
                     </FormControl>
+                
+                    <FormControl mt={ 5 }>
+                        <Notification show={ !valid } severity="error" message="Usuário ou senha inválidos" />
+                    </FormControl>
 
                 </Form>
+
+
             </Content>
         </Main>
     );

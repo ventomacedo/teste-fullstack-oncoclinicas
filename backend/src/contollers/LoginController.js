@@ -17,11 +17,11 @@ module.exports = {
             const message     = details.map(i => i.message).join(',');
             return res.status(422).send({ error: message });
         }
-
-        const { email, password } = req.body;
-        const user     = await Users.findOne({ where: { email }});
-        const response = bcrypt.compareSync(password, user.password);
         
+        const { email, password } = req.body;
+        const user = await Users.findOne({ where: { email }});
+        
+        const response = !!user ? bcrypt.compareSync(password, user.password) : null ;
         if(response) {
             const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_TOKEN);
             return res.send({ 

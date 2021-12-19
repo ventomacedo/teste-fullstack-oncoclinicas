@@ -1,10 +1,17 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+
 import AuthService from '../services/auth';
+import { history } from '../helpers/history';
 
 const AuthContext = createContext({ });
 
 const AuthProvider = ({ children }) => {
     
+
+    useEffect(() => {
+        !!logged && history.push('/dashboard');
+    }, [ logged ]);
+
     const [ logged, setLogged ] = useState(() => {
         const isLogged = localStorage.getItem('@oncoclinicas:token');
         return !!isLogged;
@@ -12,7 +19,7 @@ const AuthProvider = ({ children }) => {
 
     const signIn = async (email, password) => {
         const response = await AuthService.signin(email, password);
-        if(response.status === 200) {
+        if(response) {
             localStorage.setItem('@oncoclinicas:token', response.token);
             setLogged(true);
             return true;
