@@ -43,7 +43,7 @@ Esse comando irá cadastrar o usuário:
 
 - Name: Master User
 - Email: vento@oncoclinicas.com.br
-- Pass: 19Oncoclinicas@19
+- Pass: 12@SenhaTeste
 
 Com isso, sendo possível agora utilizar a API e seu Token para validar seus acessos.
 ____

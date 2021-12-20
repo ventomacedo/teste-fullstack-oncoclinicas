@@ -77,7 +77,7 @@ module.exports = {
             res.send({ message: "Successfully updated" });
         }
         else {
-            res.status().send({ message: "Register not found" });
+            res.send({ message: "Register not found" });
         }
     },
     remove: async (req, res) => {
