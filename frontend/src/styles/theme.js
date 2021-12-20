@@ -1,7 +1,12 @@
 import { extendTheme } from '@chakra-ui/react';
+import './fonts';
 
 const theme = extendTheme({
-    fonts: { body: 'Lato' },
+    fonts: { 
+        heading: 'Lato',
+        body:    'Lato',
+        mono:    'Lato',
+    },
     fontWeights: {
         light:  300,
         normal: 400,

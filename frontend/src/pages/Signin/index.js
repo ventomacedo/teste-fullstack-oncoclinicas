@@ -38,7 +38,7 @@ const Signin = () => {
                             <Input 
                                 id="email" 
                                 type="email" 
-                                label="E-mail" 
+                                placeholder="E-mail" 
                                 isInvalid={ !!errors?.email }
                                 errorBorderColor="red.500"
                                 autoComplete="off"
@@ -60,7 +60,7 @@ const Signin = () => {
                             <Input 
                                 id="password" 
                                 type={ showPass ? "text" : "password" }  
-                                label="Password"
+                                placeholder="Password"
                                 isInvalid={ !!errors?.password }
                                 errorBorderColor="red.500"
                                 autoComplete="off"

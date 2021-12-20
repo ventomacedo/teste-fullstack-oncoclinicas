@@ -5,8 +5,24 @@ const Joi       = require('joi');
 module.exports = { 
     
     index: async (req, res) => {
-        const doctors = await Doctor.findAll();
-        res.send(doctors);
+        try {
+            const { page, size } = req.query;
+            
+            const limit   = size ? +size  : 10 ;
+            const offset  = page > 0 ? limit * (page - 1) : 0 ;
+            const doctors = await Doctor.findAndCountAll({ limit, offset });
+            res.send({
+                rows: doctors.rows,
+                pagination: {
+                    totalItems:  doctors.count || 0,
+                    totalPages:  Math.ceil(doctors.count / size) || 1,
+                    currentPage: page ? +page : 1
+                }
+            });
+        }
+        catch (error) {
+            res.send({ messate: `Error: ${error.message}` });
+        }
     },
     show: async (req, res) => {
 
@@ -41,7 +57,7 @@ module.exports = {
                 ]
             }
         });
-        res.send(doctors);
+        res.send({ rows: doctors });
     },
 
     add: async (req, res) => {

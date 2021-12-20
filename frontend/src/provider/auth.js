@@ -7,15 +7,13 @@ const AuthContext = createContext({ });
 
 const AuthProvider = ({ children }) => {
     
+    const [ logged, setLogged ] = useState(() => {
+        return !!localStorage.getItem('@oncoclinicas:token');
+    });
 
     useEffect(() => {
-        !!logged && history.push('/dashboard');
+        !logged && history.push('/');
     }, [ logged ]);
-
-    const [ logged, setLogged ] = useState(() => {
-        const isLogged = localStorage.getItem('@oncoclinicas:token');
-        return !!isLogged;
-    });
 
     const signIn = async (email, password) => {
         const response = await AuthService.signin(email, password);
@@ -30,7 +28,7 @@ const AuthProvider = ({ children }) => {
     const signOut = () => {
         localStorage.removeItem('@oncoclinicas:token');
         setLogged(false);
-        window.location.href = process.env.PUBLIC_URL;
+        window.location.href = '/';
     };
 
     return (
@@ -40,9 +38,5 @@ const AuthProvider = ({ children }) => {
     );
 }
 
-const useAuth = () => {
-    const context = useContext(AuthContext);
-    return context;
-}
-
+const useAuth = () => useContext(AuthContext);
 export { AuthProvider, useAuth };

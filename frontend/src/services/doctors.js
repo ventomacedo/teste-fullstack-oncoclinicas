@@ -1,13 +1,10 @@
 
-import Axios from 'axios';
-
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const axios    = Axios.create({ baseURL: BASE_URL });
+import api from './api';
 
 const auth = {
-    all: async () => {
+    all: async (page = 1) => {
         try {
-            const { data } = await axios.get('/medicos');
+            const { data } = await api.get(`/medicos?page=${page}&size=10`);
             return data;
         }
         catch(error) {
@@ -17,7 +14,7 @@ const auth = {
     },
     show: async (id) => {
         try {
-            const { data } = await axios.get(`/medicos/${id}`);
+            const { data } = await api.get(`/medicos/${id}`);
             return data;
         }
         catch(error) {
@@ -27,7 +24,7 @@ const auth = {
     },
     search: async (terms) => {
         try {
-            const { data } = await axios.get(`/medicos/find/${terms}`);
+            const { data } = await api.get(`/medicos/find/${terms}`);
             return data;
         }
         catch(error) {
@@ -38,7 +35,7 @@ const auth = {
 
     insert: async (doctor) => {
         try {
-            const response = await axios.post('/medicos', doctor);
+            const response = await api.post('/medicos', doctor);
             return response.status === 201 ? true : false ;
         }
         catch(error) {
@@ -48,7 +45,7 @@ const auth = {
     },
     update: async (id, doctor) => {
         try {
-            const response = await axios.patch(`/medicos/${id}`, doctor);
+            const response = await api.patch(`/medicos/${id}`, doctor);
             return response.status === 200 ? true : false ;
         }
         catch(error) {
@@ -58,7 +55,7 @@ const auth = {
     },
     remove: async (id) => {
         try {
-            const response = await axios.patch(`/medicos/${id}`);
+            const response = await api.delete(`/medicos/${id}`);
             return response.status === 200 ? true : false ;
         }
         catch(error) {

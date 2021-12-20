@@ -5,8 +5,24 @@ const Joi       = require('joi');
 module.exports = { 
     
     index: async (req, res) => {
-        const users = await Users.findAll();
-        res.send(users);
+        try {
+            const { page, size } = req.query;
+
+            const limit   = size ? +size  : 10 ;
+            const offset  = page > 0 ? limit * (page - 1) : 0 ;
+            const users = await Users.findAndCountAll({ limit, offset });
+            res.send({
+                rows: users.rows,
+                pagination: {
+                    totalItems:  users.count || 0,
+                    totalPages:  Math.ceil(users.count / size) || 1,
+                    currentPage: page ? +page : 1
+                }
+            });
+        }
+        catch (error) {
+            res.send({ messate: `Error: ${error.message}` });
+        }
     },
     show: async (req, res) => {
 
@@ -16,7 +32,7 @@ module.exports = {
             return res.send({ message: "Id is required" });
 
         const users = await Users.findAll({ where: { id: params.id } });
-        res.send(users);
+        res.send({ rows: users });
     },
 
     add: async (req, res) => {
